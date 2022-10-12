@@ -1,0 +1,17 @@
+{
+    "ignore": [
+        ".git*",
+        "node_modules/**/node_modules",
+        "LICENSE",
+        "package*.json",
+        "README.MD"
+    ],
+
+    "events": {
+        "restart": "cls"
+    },
+
+    "env": {
+        "NODE_ENV": "development"
+    }
+}
