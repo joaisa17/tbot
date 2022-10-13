@@ -1,4 +1,4 @@
-import { Client } from 'discord.js';
+import { Client, InteractionReplyOptions } from 'discord.js';
 
 
 import serverCommands, { CommandMap } from './server';
@@ -18,6 +18,19 @@ export default function configureCommands(client: Client) {
         )?.get(cmd);
         
         if (!command) return;
-        return await command(i);
+        
+        try {
+            await command(i);
+        } catch(err) {
+            const res: InteractionReplyOptions = {
+                content: 'Failed to run command',
+                ephemeral: true
+            };
+
+            if (i.deferred) await i.editReply(res.content);
+            else if (!i.replied) await i.reply(res);
+            
+            console.error(err);
+        }
     })
 }

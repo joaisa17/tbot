@@ -4,7 +4,10 @@
         "node_modules/**/node_modules",
         "LICENSE",
         "package*.json",
-        "README.MD"
+        "README.MD",
+
+        "terraria/servers/*",
+        "terraria/versions/*"
     ],
 
     "events": {
@@ -13,5 +16,7 @@
 
     "env": {
         "NODE_ENV": "development"
-    }
+    },
+
+    "ext": "ts"
 }

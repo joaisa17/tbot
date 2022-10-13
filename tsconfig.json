@@ -14,14 +14,20 @@
 
         "baseUrl": ".",
         "paths": {
-            "@client/*": ["src/client/*"],
             "@client": ["src/client/index"],
+            "@client/*": ["src/client/*"],
 
-            "@mongoose/*": ["src/mongoose/*"],
             "@mongoose": ["src/mongoose/index"],
+            "@mongoose/*": ["src/mongoose/*"],
 
-            "@schemas/*": ["src/mongoose/schemas/*"],
             "@schemas": ["src/mongoose/schemas/index"],
+            "@schemas/*": ["src/mongoose/schemas/*"],
+
+            "@terraria": ["src/terraria/index"],
+            "@terraria/*": ["src/terraria/*"],
+
+            "@utils": ["src/utils/index"],
+            "@utils/*": ["src/utils/*"],
             
             "@/*": ["src/*"]
         },

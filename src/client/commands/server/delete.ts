@@ -2,19 +2,18 @@ import { Handler } from '.';
 import { discordServer } from '@mongoose/schemas';
 
 const deleteServer: Handler = async i => {
-    const id = i.options.getString('id', true);
+    await i.deferReply({ ephemeral: true });
 
-    const guild = await discordServer.findOne({ id: i.guildId });
+    const id = i.options.getString('id', true);
+    const guildId = i.guildId;
+
+    const guild = await discordServer.findOne({ guildId });
     if (!guild) return;
 
     const serverIndex = guild.servers.findIndex(s => s.id === id);
 
-    if (serverIndex <= 0) {
-        i.reply({
-            content: 'The server does not exist!',
-            ephemeral: true
-        });
-
+    if (serverIndex < 0) {
+        i.editReply('The server does not exist!');
         return;
     }
 
@@ -23,10 +22,7 @@ const deleteServer: Handler = async i => {
     guild.servers.splice(serverIndex, 1);
     await guild.save();
 
-    i.reply({
-        content: `Successfully deleted server \`${id}\`!`,
-        ephemeral: true
-    });
+    i.editReply(`Successfully deleted server \`${id}\`!`);
 }
 
 export default deleteServer;

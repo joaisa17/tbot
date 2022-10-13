@@ -14,7 +14,9 @@ const required: string[] = [
     'MONGO_AUTHSOURCE',
 
     'DEFAULT_VERSION',
-    'DEFAULT_DIFFICULTY'
+    'DEFAULT_DIFFICULTY',
+
+    'URL_TEMPLATE'
 ];
 
 const missingKeys: string[] = [];

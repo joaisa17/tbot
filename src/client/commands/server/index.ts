@@ -1,6 +1,6 @@
-import { Awaitable, ChatInputCommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 
-export type Handler = (interaction: ChatInputCommandInteraction) => Awaitable<void>;
+export type Handler = (interaction: ChatInputCommandInteraction) => Promise<unknown>;
 export type CommandMap = Map<string, Handler>;
 
 import createServer from './create';

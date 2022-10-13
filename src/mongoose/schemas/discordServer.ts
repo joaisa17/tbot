@@ -1,23 +1,32 @@
 import { model, Schema } from 'mongoose';
 
+export enum Difficulty {
+    normal = 0,
+    expert = 1,
+    master = 2,
+    journey = 3
+}
+
+export interface ITerrariaServer {
+    id: string;
+    version: string;
+
+    ownerId: string;
+    admins: string[];
+    
+    // Config parameters
+    port: number;
+    password?: string;
+    
+    worldname?: string;
+    seed?: string;
+    difficulty?: string;
+}
+
 export interface IDiscordServer {
     guildId: string;
 
-    servers: {
-        id: string;
-        version: string;
-
-        ownerId: string;
-        admins: string[];
-        
-        // Config parameters
-        port: number;
-        password?: string;
-        
-        worldname?: string;
-        seed?: string;
-        difficulty?: number; // 0-3, where 0 is normal, and 3 is journey
-    }[];
+    servers: ITerrariaServer[];
 }
 
 const discordServerSchema = new Schema<IDiscordServer>({
@@ -35,7 +44,7 @@ const discordServerSchema = new Schema<IDiscordServer>({
         
         worldname: 'string',
         seed: 'string',
-        difficulty: 'number'
+        difficulty: 'string'
     }]
 });
 

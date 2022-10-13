@@ -1,6 +1,9 @@
 import { Handler } from '.'
 import { discordServer } from '@mongoose/schemas';
 
+import downloadVersion from '@terraria/download';
+import extractZip from '@terraria/extract';
+
 const createServer: Handler = async i => {
     const id = i.options.getString('id', true);
     const port = i.options.getInteger('port', true);
@@ -8,6 +11,8 @@ const createServer: Handler = async i => {
 
     const version = i.options.getString('version') || process.env.DEFAULT_VERSION as string;
     const password = i.options.getString('password') || undefined;
+
+    await i.deferReply({ ephemeral: true, fetchReply: true });
 
     const all = await discordServer.find();
 
@@ -20,21 +25,30 @@ const createServer: Handler = async i => {
     });
 
     if (idMatch) {
-        i.reply({
-            content: 'A server is already using the id!',
-            ephemeral: true
-        });
-
-        return;
+        return i.editReply(
+            'A server is already using the id!'
+        );
     }
 
     if (portMatch) {
-        i.reply({
-            content: 'A server is already using the port!',
-            ephemeral: true
-        });
+        return i.editReply(
+            'A server is already using the port!'
+        );
+    }
 
-        return;
+    try {
+        await downloadVersion(version);
+    } catch {
+        return i.editReply(
+            'Failed to fetch Terraria version! Did you type the correct version?'
+        );
+    }
+
+    try {
+        await extractZip(version);
+    } catch(err) {
+        i.editReply('Failed to extract ZIP! Please contact the developer.');
+        return console.error(err);
     }
 
     const server = all.find(s => s.guildId === guildId) || await discordServer.create({ guildId, servers: [] });
@@ -52,10 +66,7 @@ const createServer: Handler = async i => {
 
     await server.save();
 
-    i.reply({
-        content: `Successfully created a new server! run \`/start ${id}\` to launch the server.`,
-        ephemeral: true
-    });
+    i.editReply(`Successfully registered a new server! run \`/start ${id}\` to launch the server.`);
 };
 
 export default createServer;
