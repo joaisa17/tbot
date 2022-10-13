@@ -4,19 +4,17 @@ import {
     SlashCommandBuilder,
     PermissionFlagsBits
 } from 'discord.js';
-    
+
+import targetId from '@utils/commandOptions/targetId';
+
+/** Example: `/create id: testserver port: 7777` */
 const create = new SlashCommandBuilder()
     .setName('create')
     .setDescription('Creates a new server')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
     // id
-    .addStringOption(
-        new SlashCommandStringOption()
-            .setName('id')
-            .setDescription('The alias used to reference the server')
-            .setRequired(true)
-    )
+    .addStringOption(targetId())
 
     // port
     .addIntegerOption(
@@ -39,7 +37,7 @@ const create = new SlashCommandBuilder()
     .addStringOption(
         new SlashCommandStringOption()
             .setName('version')
-            .setDescription(`Optional version number. Currently defaults to ${process.env.DEFAULT_VERSION}`)
+            .setDescription(`Optional version number. Defaults to ${process.env.DEFAULT_VERSION}`)
     )
 
 export default create;

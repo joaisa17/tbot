@@ -1,52 +1,28 @@
 import { model, Schema } from 'mongoose';
-
-export enum Difficulty {
-    normal = 0,
-    expert = 1,
-    master = 2,
-    journey = 3
-}
-
-export interface ITerrariaServer {
-    id: string;
-    version: string;
-
-    ownerId: string;
-    admins: string[];
-    
-    // Config parameters
-    port: number;
-    password?: string;
-    
-    worldname?: string;
-    seed?: string;
-    difficulty?: string;
-}
-
-export interface IDiscordServer {
-    guildId: string;
-
-    servers: ITerrariaServer[];
-}
+import { IDiscordServer } from '@customTypes';
 
 const discordServerSchema = new Schema<IDiscordServer>({
     guildId: { type: 'string', required: true, unique: true },
 
     servers: [{
-        id: { type: 'string', required: true },
-        version: { type: 'string' },
+        type: {
+            id: { type: 'string', required: true },
+            version: { type: 'string', default: process.env.DEFAULT_VERSION },
 
-        ownerId: 'string',
-        admins: ['string'],
+            ownerId: { type: 'string', required: true },
+            admins: ['string'],
 
-        port: { type: 'number', required: true, unique: true },
-        password: 'string',
+            port: { type: 'number', required: true, unique: true },
+            password: 'string',
+            
+            worldname: 'string',
+            seed: 'string',
+            difficulty: 'string'
+        },
         
-        worldname: 'string',
-        seed: 'string',
-        difficulty: 'string'
+        required: true
     }]
-});
+}, { timestamps: true });
 
 const discordServer = model<IDiscordServer>('discordServer', discordServerSchema);
 export default discordServer;

@@ -1,7 +1,11 @@
-import { ITerrariaServer } from '@mongoose/schemas/discordServer';
+import { ITerrariaServer } from '@customTypes';
+import { join } from 'node:path';
 
 import loadConfig from './config';
 import Terminal from './terminal';
+
+export const serversDir = join(__dirname, 'servers');
+export const versionsDir = join(__dirname, 'versions');
 
 export const terminals: Record<string, Record<string, Terminal>> = {};
 

@@ -1,1 +1,1 @@
-export { default as discordServer, IDiscordServer } from './discordServer';
+export { default as discordServer } from './discordServer';

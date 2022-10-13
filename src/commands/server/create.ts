@@ -1,10 +1,18 @@
-import { Handler } from '.'
+import { CommandHandler } from '@customTypes';
 import { discordServer } from '@mongoose/schemas';
 
-import downloadVersion from '@terraria/download';
-import extractZip from '@terraria/extract';
+import installVersion, { versionIsInstalled } from '@terraria/install';
+import CommandError from '@utils/commandError';
 
-const createServer: Handler = async i => {
+interface Options {
+    id: string;
+    port: number;
+
+    version?: string;
+    password?: string;
+}
+
+const createServer: CommandHandler<Options> = async i => {
     const id = i.options.getString('id', true);
     const port = i.options.getInteger('port', true);
     const guildId = i.guildId;
@@ -36,29 +44,25 @@ const createServer: Handler = async i => {
         );
     }
 
-    try {
-        await downloadVersion(version);
-    } catch {
-        return i.editReply(
-            'Failed to fetch Terraria version! Did you type the correct version?'
-        );
+    const installed = await versionIsInstalled(version);
+
+    if (!installed) {
+        await i.editReply(`Installing version ${version}...`);
+
+        try {
+            await installVersion(version);
+        } catch(err) {
+            throw new CommandError(err, 'Failed to fetch terraria version');
+        }
     }
 
-    try {
-        await extractZip(version);
-    } catch(err) {
-        i.editReply('Failed to extract ZIP! Please contact the developer.');
-        return console.error(err);
-    }
-
-    const server = all.find(s => s.guildId === guildId) || await discordServer.create({ guildId, servers: [] });
+    const server = all.find(s => s.guildId === guildId) || await discordServer.create({ guildId });
 
     server.servers.push({
         id,
         port,
 
         ownerId: i.user.id,
-        admins: [],
 
         version,
         password

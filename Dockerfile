@@ -1,12 +1,13 @@
 FROM ubuntu:latest
-FROM node:16-alpine
+FROM node:16.14.2 AS build
 
-RUN mkdir /app
-WORKDIR /app
+COPY . .
+RUN npm install && npm run build
 
-COPY package.json /app
-COPY .env /app
-COPY dist /app
+FROM node:slim-16.14.2
+USER node
 
-RUN npm i --omit=dev
-CMD ["npm", "start"]
+COPY --from=build /home/node/app/dist /home/node/app/package.json /home/node/app/package-lock.json ./
+RUN npm install --production
+
+CMD ["node", "dist/index.js"]

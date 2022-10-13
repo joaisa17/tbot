@@ -16,7 +16,9 @@ const required: string[] = [
     'DEFAULT_VERSION',
     'DEFAULT_DIFFICULTY',
 
-    'URL_TEMPLATE'
+    'URL_TEMPLATE',
+
+    'ERROR_TEMPLATE'
 ];
 
 const missingKeys: string[] = [];

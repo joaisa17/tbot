@@ -1,12 +1,15 @@
+import { platform } from 'node:os';
+
 import { ChildProcess, spawn } from 'node:child_process';
 import eventEmitter from '@utils/eventEmitter';
 
-import { ITerrariaServer } from '@mongoose/schemas/discordServer';
-
+import { ITerrariaServer } from '@customTypes';
 import shortenVersion from '@utils/shortenVersion';
 
 interface Events {
     stdout: string;
+
+    cleanExit: void;
     exit: string;
 }
 
@@ -44,6 +47,8 @@ export default class Terminal {
 
         this.process.stdout.on('data', chunk => {
             this.emitter.emit('stdout', chunk);
+
+            // Check for server exit with regex here, and emit cleanExit
         });
 
         this.process.on('close', this.onClose);
@@ -57,6 +62,7 @@ export default class Terminal {
     }
 
     constructor(config: ITerrariaServer) {
+        if (platform() !== 'linux') throw new Error('server must be running on a Linux distribution');
         this.config = config;
     }
 }

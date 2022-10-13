@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits } from 'discord.js';
 import chalk from 'chalk';
 
-import configureCommandStructure from './commands/structure';
+import configureStructure from './structure';
 import configureCommands from './commands';
 
 const client = new Client({
@@ -9,7 +9,7 @@ const client = new Client({
 });
 
 client.on('ready', async cli => {
-    await configureCommandStructure(cli);
+    await configureStructure();
     configureCommands(cli);
 
     console.log(

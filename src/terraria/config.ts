@@ -1,7 +1,9 @@
-import { ITerrariaServer } from '@mongoose/schemas/discordServer';
+import { ITerrariaServer } from '@customTypes';
 
 import { join } from 'node:path';
-import { writeFile } from 'node:fs';
+
+import { writeFile } from 'node:fs/promises';
+import { createDirIfMissing } from '@utils/fs';
 
 export const difficultyScope: Record<string, number> = {
     normal: 0,
@@ -10,7 +12,9 @@ export const difficultyScope: Record<string, number> = {
     journey: 3
 };
 
-export default function loadConfig(server: ITerrariaServer): Promise<void> {
+import { serversDir } from '@terraria';
+
+export default async function loadConfig(server: ITerrariaServer) {
     const {
         id,
         ownerId,
@@ -27,20 +31,15 @@ export default function loadConfig(server: ITerrariaServer): Promise<void> {
         ...options
     };
 
-    return new Promise((resolve, reject) => {
-        writeFile(
-            join(__dirname, 'servers', id),
-    
-            Object.keys(config)
-            .map(k => `${k}=${config[k]}`)
-            .join('\n'),
-    
-            { encoding: 'utf-8' },
-    
-            err => {
-                if (err) reject(err)
-                else resolve();
-            }
-        );
-    });
+    await createDirIfMissing(serversDir);
+
+    await writeFile(
+        join(serversDir, id),
+
+        Object.keys(config)
+        .map(k => `${k}=${config[k]}`)
+        .join('\n'),
+
+        { encoding: 'utf-8' }
+    );
 }

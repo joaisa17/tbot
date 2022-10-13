@@ -14,9 +14,6 @@
 
         "baseUrl": ".",
         "paths": {
-            "@client": ["src/client/index"],
-            "@client/*": ["src/client/*"],
-
             "@mongoose": ["src/mongoose/index"],
             "@mongoose/*": ["src/mongoose/*"],
 
@@ -28,6 +25,9 @@
 
             "@utils": ["src/utils/index"],
             "@utils/*": ["src/utils/*"],
+
+            "@customTypes": ["src/types/index"],
+            "@customTypes/*": ["src/types/*"],
             
             "@/*": ["src/*"]
         },

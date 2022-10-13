@@ -1,9 +1,14 @@
-import { Handler } from '.';
+import { CommandHandler } from '@customTypes';
 import { discordServer } from '@mongoose/schemas';
 
 import configureServer, { Terminal } from '@terraria';
+import installVersion, { versionIsInstalled } from '@terraria/install';
 
-const startServer: Handler = async i => {
+import CommandError from '@utils/commandError';
+
+interface Options { id: string }
+
+const startServer: CommandHandler<Options> = async i => {
     await i.deferReply();
 
     const id = i.options.getString('id', true);
@@ -18,14 +23,26 @@ const startServer: Handler = async i => {
         return;
     }
 
+    const version = server.version;
+
+    const installed = await versionIsInstalled(version);
+    if (!installed) {
+        await i.editReply(`Version ${version} is not installed! Installing...`);
+        
+        try {
+            await installVersion(version);
+        } catch(err) {
+            throw new CommandError(err, `Failed to install version ${version}`);
+        }
+    }
+
     await i.editReply(`Configuring server \`${server.worldname ?? id}\`...`);
-    
     let term: Terminal;
 
     try {
         term = await configureServer(server, guildId);
     } catch(err) {
-        return i.editReply(`Failed to configure server: ${err.message ?? 'uncaught exception'}`);
+        throw new CommandError(err, 'Failed to configure server');
     }
 
     const msg = await i.editReply('Starting server...');
@@ -57,6 +74,13 @@ const startServer: Handler = async i => {
         const [username, msg] = match;
         thread.sendable && thread.send(`<${username}> ${msg}`);
     });
+}
+
+startServer.autoComplete = (i, server) => {
+    i.respond(server.servers.map(s => ({
+        name: s.id,
+        value: s.id
+    })));
 }
 
 export default startServer;

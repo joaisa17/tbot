@@ -1,19 +1,16 @@
 import { get } from 'node:https';
-import { existsSync, createWriteStream } from 'node:fs';
+import { createWriteStream } from 'node:fs';
 import { join } from 'node:path';
 
-import shortenVersion from '@utils/shortenVersion';
+import { versionsDir } from '@terraria';
 
-export default function downloadVersion(v: string = process.env.DEFAULT_VERSION): Promise<void> {
-    const versionName = shortenVersion(v);
+export default function downloadVersion(v: string): Promise<void> {
 
-    const fileName = versionName + '.zip';
-    const filePath = join(__dirname, 'versions', fileName);
-
-    if (existsSync(filePath)) return Promise.resolve();
+    const fileName = v + '.zip';
+    const filePath = join(versionsDir, fileName);
 
     return new Promise((resolve, reject) => {
-        get(process.env.URL_TEMPLATE.replace(/\{version\}/, versionName),
+        get(process.env.URL_TEMPLATE.replace(/\{version\}/, v),
 
         res => {
             if (res.statusCode !== 200) return reject('request returned a non 200 code status');
