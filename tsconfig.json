@@ -37,6 +37,6 @@
         "noUnusedParameters": true
     },
 
-    "include": ["src/**/*", "src/**/*.sh"],
+    "include": ["src/**/*"],
     "exclude": ["node_modules", "dist"]
 }

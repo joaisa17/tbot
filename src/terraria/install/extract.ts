@@ -10,7 +10,15 @@ export default async function extractVersion(v: string): Promise<void> {
     const fileName = versionPath + '.zip';
 
     const zip = new AdmZip(fileName);
-    zip.extractEntryTo(v + '/Linux/', versionPath, false, false, true);
     
-    await chmod(join(serversDir, v, 'TerrariaServer.bin.86_64'), 0o755);
+    return new Promise((res, rej) => {
+        zip.extractAllToAsync(versionPath, false, true, async err => {
+            if (err) rej(err);
+            else {
+                await chmod(join(serversDir, v, 'TerrariaServer.bin.86_64'), 0o755);
+                res();
+            }
+        });
+    })
+    //zip.extractEntryTo(v + '/Linux/', versionPath, false, false, true);
 }
