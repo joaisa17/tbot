@@ -4,6 +4,9 @@ import { ChildProcess, spawn } from 'node:child_process';
 import eventEmitter from '@utils/eventEmitter';
 
 import { ITerrariaServer } from '@customTypes';
+import { join } from 'node:path';
+import { serversDir, versionsDir } from '@terraria';
+
 import shortenVersion from '@utils/shortenVersion';
 
 interface Events {
@@ -40,8 +43,8 @@ export default class Terminal {
         if (this.process) throw new Error('child process is already initialized');
 
         this.process = spawn(
-            'sh',
-            ['run.sh', shortenVersion(this.config.version), this.config.id],
+            join(versionsDir, this.config.version, 'TerrariaServer.bin.x86_64'),
+            ['-config', join(serversDir, this.config.id)],
             { cwd: __dirname }
         );
 
@@ -63,6 +66,12 @@ export default class Terminal {
 
     constructor(config: ITerrariaServer) {
         if (platform() !== 'linux') throw new Error('server must be running on a Linux distribution');
-        this.config = config;
+
+        const { version, ...cfg } = config;
+
+        this.config = {
+            version: shortenVersion(version),
+            ...cfg
+        };
     }
 }
