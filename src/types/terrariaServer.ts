@@ -10,6 +10,7 @@ export default interface ITerrariaServer {
     password?: string;
     
     worldname?: string;
+    worldsize?: 'small'|'medium'|'large';
+    difficulty?: 'normal'|'expert'|'master'|'journey';
     seed?: string;
-    difficulty?: string;
 }

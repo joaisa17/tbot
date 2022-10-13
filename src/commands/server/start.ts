@@ -14,7 +14,7 @@ const startServer: CommandHandler<Options> = async i => {
     const id = i.options.getString('id', true);
     const guildId = i.guildId;
     
-    const guild = await discordServer.findOne({ guildId });
+    const guild = await (await discordServer.findOne({ guildId }, { $pull: { servers: '_id' } }))?.toJSON();
 
     const server = guild?.servers.find(s => s.id === id);
 

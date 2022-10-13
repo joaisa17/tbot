@@ -26,10 +26,8 @@ export default async function loadConfig(server: ITerrariaServer) {
 
     const parsedDifficulty = difficulty && difficultyScope[difficulty];
 
-    const config: Record<string, unknown> = {
-        difficulty: parsedDifficulty,
-        ...options
-    };
+    const config: {[k: string]: unknown} = options;
+    if (parsedDifficulty) config.difficulty = parsedDifficulty;
 
     await createDirIfMissing(serversDir);
 
@@ -38,8 +36,6 @@ export default async function loadConfig(server: ITerrariaServer) {
 
         Object.keys(config)
         .map(k => `${k}=${config[k]}`)
-        .join('\n'),
-
-        { encoding: 'utf-8' }
+        .join('\n')
     );
 }

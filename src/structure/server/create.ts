@@ -40,4 +40,29 @@ const create = new SlashCommandBuilder()
             .setDescription(`Optional version number. Defaults to ${process.env.DEFAULT_VERSION}`)
     )
 
+    // difficulty
+    .addStringOption(
+        new SlashCommandStringOption()
+            .setName('difficulty')
+            .setDescription('The world\'s difficulty')
+            .setChoices(
+                { name: 'normal', value: 'normal' },
+                { name: 'expert', value: 'expert' },
+                { name: 'master', value: 'master' },
+                { name: 'journey', value: 'journey' }
+            )
+    )
+
+    // world size
+    .addStringOption(
+        new SlashCommandStringOption()
+            .setName('worldsize')
+            .setDescription('The world\'s size')
+            .setChoices(
+                { name: 'small', value: 'small' },
+                { name: 'medium', value: 'medium' },
+                { name: 'large', value: 'large' }
+            )
+    )
+
 export default create;

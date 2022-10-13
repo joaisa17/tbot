@@ -20,7 +20,8 @@ const discordServerSchema = new Schema<IDiscordServer>({
             difficulty: 'string'
         },
         
-        required: true
+        required: true,
+        _id: false
     }]
 }, { timestamps: true });
 
