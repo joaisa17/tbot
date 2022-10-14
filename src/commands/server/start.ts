@@ -14,7 +14,7 @@ const startServer: CommandHandler<Options> = async i => {
     const id = i.options.getString('id', true);
     const guildId = i.guildId;
     
-    const guild = await (await discordServer.findOne({ guildId }, { $pull: { servers: '_id' } }))?.toJSON();
+    const guild = await (await discordServer.findOne({ guildId }))?.toJSON();
 
     const server = guild?.servers.find(s => s.id === id);
 
@@ -36,7 +36,7 @@ const startServer: CommandHandler<Options> = async i => {
         }
     }
 
-    await i.editReply(`Configuring server \`${server.worldname ?? id}\`...`);
+    await i.editReply(`Configuring server \`${server.config.worldname ?? id}\`...`);
     let term: Terminal;
 
     try {

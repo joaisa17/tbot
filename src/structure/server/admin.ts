@@ -1,13 +1,15 @@
-import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandUserOption } from 'discord.js';
+import { PermissionFlagsBits, SlashCommandBuilder, SlashCommandStringOption } from 'discord.js';
 
-import targetId from '@utils/commandOptions/targetId';
+import { targetIdOption, targetUserOption } from '@utils/commandOptions';
 
 /** Example: `/admin id: testserver action: grant user: @user` */
 const adminCommand = new SlashCommandBuilder()
     .setName('admin')
     .setDescription('Contains a subset of permissions you can grant/revoke to other users')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     
-    .addStringOption(targetId(true))
+    .addStringOption(targetIdOption(true))
+    .addUserOption(targetUserOption(true))
 
     .addStringOption(
         new SlashCommandStringOption()
@@ -19,13 +21,5 @@ const adminCommand = new SlashCommandBuilder()
                 { name: 'revoke', value: 'revoke' }
             )
     )
-
-    .addUserOption(
-        new SlashCommandUserOption()
-            .setName('user')
-            .setDescription('Target user to modify permissions for')
-            .setRequired(true)
-    )
-
 
 export default adminCommand;

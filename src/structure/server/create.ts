@@ -1,11 +1,17 @@
 import {
-    SlashCommandStringOption,
-    SlashCommandIntegerOption,
     SlashCommandBuilder,
     PermissionFlagsBits
 } from 'discord.js';
 
-import targetId from '@utils/commandOptions/targetId';
+import {
+    targetIdOption,
+    portOption,
+    passwordOption,
+    versionOption,
+    difficultyOption,
+    worldNameOption,
+    worldSizeOption
+} from '@utils/commandOptions';
 
 /** Example: `/create id: testserver port: 7777` */
 const create = new SlashCommandBuilder()
@@ -14,55 +20,24 @@ const create = new SlashCommandBuilder()
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
     // id
-    .addStringOption(targetId())
+    .addStringOption(targetIdOption(true))
 
     // port
-    .addIntegerOption(
-        new SlashCommandIntegerOption()
-            .setName('port')
-            .setDescription('The port to host the server on')
-            .setRequired(true)
-            .setMinValue(1024)
-            .setMaxValue(49151)
-    )
+    .addIntegerOption(portOption(true))
 
     // password
-    .addStringOption(
-        new SlashCommandStringOption()
-            .setName('password')
-            .setDescription('Optional password')
-    )
+    .addStringOption(passwordOption())
 
     // version
-    .addStringOption(
-        new SlashCommandStringOption()
-            .setName('version')
-            .setDescription(`Optional version number. Defaults to ${process.env.DEFAULT_VERSION}`)
-    )
+    .addStringOption(versionOption())
 
     // difficulty
-    .addStringOption(
-        new SlashCommandStringOption()
-            .setName('difficulty')
-            .setDescription('The world\'s difficulty')
-            .setChoices(
-                { name: 'normal', value: 'normal' },
-                { name: 'expert', value: 'expert' },
-                { name: 'master', value: 'master' },
-                { name: 'journey', value: 'journey' }
-            )
-    )
+    .addStringOption(difficultyOption())
 
     // world size
-    .addStringOption(
-        new SlashCommandStringOption()
-            .setName('worldsize')
-            .setDescription('The world\'s size')
-            .setChoices(
-                { name: 'small', value: 'small' },
-                { name: 'medium', value: 'medium' },
-                { name: 'large', value: 'large' }
-            )
-    )
+    .addStringOption(worldSizeOption())
+
+    // world name
+    .addStringOption(worldNameOption())
 
 export default create;

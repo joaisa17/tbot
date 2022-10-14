@@ -13,7 +13,7 @@ client.on('ready', async cli => {
     configureCommands(cli);
 
     console.log(
-        chalk.green(`${cli.user.tag} is now online`)
+        chalk.bgGreen(`${cli.user.tag} is now online!`)
     );
 })
 

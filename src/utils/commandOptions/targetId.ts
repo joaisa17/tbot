@@ -1,9 +1,9 @@
 import { SlashCommandStringOption } from 'discord.js';
 
-const targetId = (autoComplete?: boolean) => new SlashCommandStringOption()
+const targetIdOption = (autocomplete?: boolean) => new SlashCommandStringOption()
     .setName('id')
     .setDescription('Target ID of the server')
     .setRequired(true)
-    .setAutocomplete(autoComplete ?? false)
+    .setAutocomplete(autocomplete ?? false)
 
-export default targetId;
+export default targetIdOption;

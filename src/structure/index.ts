@@ -4,12 +4,16 @@ import serverCommands from './server';
 import developmentCommands from './development';
 
 import { Command } from '@customTypes'
+import chalk from 'chalk';
 
 const commands: Command[] = [
     ...serverCommands
 ];
 
-process.env.NODE_ENV === 'development' && commands.push(...developmentCommands);
+if (process.env.NODE_ENV === 'development') {
+    console.log(chalk.cyan('Using development commands'));
+    commands.push(...developmentCommands);
+};
 
 export const rest = new REST().setToken(process.env.TOKEN as string);
 

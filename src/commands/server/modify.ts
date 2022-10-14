@@ -1,13 +1,13 @@
 import { CommandHandler, CommandInteraction, ITerrariaServer } from '@customTypes';
 import { discordServer } from '@mongoose/schemas';
 
-import { modifiableStrings, ModifiableStringKey } from '@/structure/server/modify';
+import { modifiable, ModifiableKey } from '@customTypes';
 
-type ReturnValue = Record<ModifiableStringKey, string>;
+type ReturnValue = Record<ModifiableKey, string>;
 function getStringOptions(i: CommandInteraction<ITerrariaServer>): ReturnValue {
     const options = <ReturnValue>{};
     
-    modifiableStrings.forEach(str => {
+    modifiable.forEach(str => {
         const option = i.options.getString(str);
         if (option) options[str] = option;
     })
@@ -30,7 +30,8 @@ const modifyCommand : CommandHandler<ITerrariaServer> = async i => {
     const server = guild.servers[serverIndex];
     const options = getStringOptions(i);
 
-    Object.keys(options).forEach((k: ModifiableStringKey) => {
+    Object.keys(options).forEach((k: ModifiableKey) => {
+        if (!options[k]) return;
         server[k] = options[k];
     });
 

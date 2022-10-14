@@ -1,18 +1,8 @@
 import { SlashCommandBuilder, SlashCommandStringOption } from 'discord.js';
 import targetId from '@utils/commandOptions/targetId';
 
-import { ITerrariaServer } from '@customTypes';
 import { portOption } from '@utils/commandOptions';
-
-export type ModifiableStringKey = keyof Omit<ITerrariaServer, 'admins'|'port'>;
-
-export const modifiableStrings: ModifiableStringKey[] = [
-    'difficulty',
-    'password',
-    'seed',
-    'version',
-    'worldname'
-];
+import { modifiable } from '@customTypes';
 
 const modifyCommand = new SlashCommandBuilder()
     .setName('modify')
@@ -21,7 +11,7 @@ const modifyCommand = new SlashCommandBuilder()
     .addStringOption(targetId(true))
     .addIntegerOption(portOption(false));
 
-modifiableStrings.forEach(name => {
+modifiable.forEach(name => {
     modifyCommand.addStringOption(
         new SlashCommandStringOption()
             .setName(name as string)
