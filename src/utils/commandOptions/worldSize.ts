@@ -1,12 +1,12 @@
-import { SlashCommandStringOption } from 'discord.js';
+import { SlashCommandIntegerOption } from 'discord.js';
 
-const worldSizeOption = () => new SlashCommandStringOption()
+const worldSizeOption = () => new SlashCommandIntegerOption()
     .setName('worldsize')
     .setDescription('Sets the world\'s size')
     .setChoices(
-        { name: 'small', value: 'small' },
-        { name: 'medium', value: 'medium' },
-        { name: 'large', value: 'large' },
+        { name: 'small', value: 1 },
+        { name: 'medium', value: 2 },
+        { name: 'large', value: 3 },
     )
 
 export default worldSizeOption;

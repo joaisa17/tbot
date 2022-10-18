@@ -15,19 +15,7 @@ export const difficultyScope: Record<string, number> = {
 import { serversDir } from '@terraria';
 
 export default async function loadConfig(server: ITerrariaServer) {
-    const {
-        id,
-        ownerId,
-        admins,
-        version,
-        difficulty,
-        ...options
-    } = server;
-
-    const parsedDifficulty = difficulty && difficultyScope[difficulty];
-
-    const config: {[k: string]: unknown} = options;
-    if (parsedDifficulty) config.difficulty = parsedDifficulty;
+    const { id, config } = server;
 
     await createDirIfMissing(serversDir);
 
@@ -35,7 +23,7 @@ export default async function loadConfig(server: ITerrariaServer) {
         join(serversDir, id),
 
         Object.keys(config)
-        .map(k => `${k}=${config[k]}`)
+        .map(k => `${k}=${config[k as keyof ITerrariaServer['config']]}`)
         .join('\n')
     );
 }

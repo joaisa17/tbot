@@ -5,7 +5,7 @@ const reloadCommands: CommandHandler = async i => {
     await configureStructure(true);
 
     i.reply({
-        content: 'Successfully reloaded all slash commands!',
+        content: 'Successfully reuploaded all slash commands! It may take a moment to appear in the server commands.',
         ephemeral: true
     });
 };

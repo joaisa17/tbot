@@ -1,15 +1,21 @@
 import { Command } from '@customTypes';
 
-import startCommand from './start';
 import createCommand from './create';
 import deleteCommand from './delete';
+
+import startCommand from './start';
+import stopCommand from './stop';
+
 import modifyCommand from './modify';
 import adminCommand from './admin';
 
 const serverCommands: Command[] = [
     createCommand,
-    startCommand,
     deleteCommand,
+
+    startCommand,
+    stopCommand,
+    
     modifyCommand,
     adminCommand
 ];

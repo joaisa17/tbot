@@ -1,4 +1,7 @@
 port=7777
+autocreate=2
+difficulty=2
+worldname=Hei Lars
+maxplayers=2
 password=lars
-worldname=medium
-_id=6349220564744d1cd7fb9a78
+motd=Hei Lars!

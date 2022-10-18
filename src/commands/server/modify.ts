@@ -1,19 +1,6 @@
-import { CommandHandler, CommandInteraction, ITerrariaServer } from '@customTypes';
+import { CommandHandler, ITerrariaServer, ModifiableConfigKey, ModifiableKey } from '@customTypes';
 import { discordServer } from '@mongoose/schemas';
-
-import { modifiable, ModifiableKey } from '@customTypes';
-
-type ReturnValue = Record<ModifiableKey, string>;
-function getStringOptions(i: CommandInteraction<ITerrariaServer>): ReturnValue {
-    const options = <ReturnValue>{};
-    
-    modifiable.forEach(str => {
-        const option = i.options.getString(str);
-        if (option) options[str] = option;
-    })
-
-    return options;
-}
+import parse from '@utils/parse';
 
 const modifyCommand : CommandHandler<ITerrariaServer> = async i => {
     await i.deferReply({ ephemeral: true });
@@ -28,11 +15,16 @@ const modifyCommand : CommandHandler<ITerrariaServer> = async i => {
 
     // Edit all params here
     const server = guild.servers[serverIndex];
-    const options = getStringOptions(i);
+    const { config, options } = parse(i);
 
     Object.keys(options).forEach((k: ModifiableKey) => {
         if (!options[k]) return;
         server[k] = options[k];
+    });
+
+    Object.keys(config).forEach((k: ModifiableConfigKey) => {
+        if (!config[k]) return;
+        (server.config[k] as unknown) = config[k];
     });
 
     await guild.save();

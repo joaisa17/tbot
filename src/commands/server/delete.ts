@@ -2,6 +2,9 @@ import { CommandHandler } from '@customTypes';
 import { discordServer } from '@mongoose/schemas';
 
 import { terminals } from '@terraria';
+import CommandError from '@utils/commandError';
+
+import shutdownServer from '@utils/shutdown';
 
 interface Options { id: string }
 
@@ -16,37 +19,22 @@ const deleteServer: CommandHandler<Options> = async i => {
 
     const serverIndex = guild.servers.findIndex(s => s.id === id);
 
-    if (serverIndex < 0) {
-        i.editReply('The server does not exist!');
-        return;
-    }
+    if (serverIndex < 0) throw new CommandError('The server does not exist!', true, 'Not found');
 
     // If the server is running, stop it
     const term = terminals[i.guildId]?.[id];
-
+    
     if (term) {
+        delete terminals[i.guildId];
         await i.editReply('Shutting down the server...');
-
-        await new Promise<void>((res, rej) => {
-            const cleanExitListener = () => {
-                term.off('cleanExit', cleanExitListener);
-                res();
-            };
-
-            const exitListener = (err: any) => {
-                term.off('exit', exitListener)
-                rej(err);
-            };
-
-            term.on('cleanExit', cleanExitListener);
-            term.on('exit', exitListener);
-
-            term.send('exit');
-
-            setTimeout(() => rej('Timed out'), 30000);
-        });
+        
+        try {
+            await shutdownServer(term);
+        } catch(err) {
+            throw new CommandError(`Failed to shut down the server: ${err}`);
+        }
     }
-
+    
     guild.servers.splice(serverIndex, 1);
     await guild.save();
 

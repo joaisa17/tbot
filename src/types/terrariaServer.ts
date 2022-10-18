@@ -1,12 +1,22 @@
 export type WorldSize = 'small'|'medium'|'large';
 export type Difficulty = 'normal'|'expert'|'master'|'journey';
 
-export const modifiable: string[] = [
-    'difficulty',
-    'password',
+export type ModifiableKey = keyof Omit<ITerrariaServer, 'config'|'admins'|'ownerId'|'id'>;
+export const modifiableKeys: ModifiableKey[] = [
+    'version'
+];
+
+export type ModifiableConfigKey = keyof ITerrariaServerConfig;
+export const modifiableConfigKeys: ModifiableConfigKey[] = [
+    'port',
+
+    'autocreate',
     'seed',
-    'version',
-    'worldname'
+    'worldname',
+    'difficulty',
+    'maxplayers',
+    'password',
+    'motd'
 ];
 
 export interface ITerrariaServerConfig {
@@ -59,5 +69,5 @@ export default interface ITerrariaServer {
     ownerId: string;
     admins?: string[];
     
-    config: Omit<ITerrariaServerConfig, 'world'|'worldpath'|'banlist'>;
+    config: ITerrariaServerConfig;
 }

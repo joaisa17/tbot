@@ -3,41 +3,17 @@ import {
     PermissionFlagsBits
 } from 'discord.js';
 
-import {
-    targetIdOption,
-    portOption,
-    passwordOption,
-    versionOption,
-    difficultyOption,
-    worldNameOption,
-    worldSizeOption
-} from '@utils/commandOptions';
+import { targetIdOption } from '@utils/commandOptions';
+import addConfigOptions from '@utils/configOptions';
 
 /** Example: `/create id: testserver port: 7777` */
-const create = new SlashCommandBuilder()
+const createCommand = new SlashCommandBuilder()
     .setName('create')
     .setDescription('Creates a new server')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
     // id
-    .addStringOption(targetIdOption(true))
+    .addStringOption(targetIdOption(false));
+    addConfigOptions(createCommand, true);
 
-    // port
-    .addIntegerOption(portOption(true))
-
-    // password
-    .addStringOption(passwordOption())
-
-    // version
-    .addStringOption(versionOption())
-
-    // difficulty
-    .addStringOption(difficultyOption())
-
-    // world size
-    .addStringOption(worldSizeOption())
-
-    // world name
-    .addStringOption(worldNameOption())
-
-export default create;
+export default createCommand;

@@ -3,7 +3,7 @@ import { chmod } from 'node:fs/promises';
 
 import AdmZip from 'adm-zip';
 
-import { versionsDir, serversDir } from '@terraria';
+import { versionsDir } from '@terraria';
 
 export default async function extractVersion(v: string): Promise<void> {
     const versionPath = join(versionsDir, v);
@@ -11,14 +11,16 @@ export default async function extractVersion(v: string): Promise<void> {
 
     const zip = new AdmZip(fileName);
     
-    return new Promise((res, rej) => {
-        zip.extractAllToAsync(versionPath, false, true, async err => {
+    zip.extractEntryTo(v + '/Linux/', versionPath, false, false, true);
+    await chmod(join(versionsDir, v, 'TerrariaServer.bin.x86_64'), 0o755);
+
+    /*return new Promise((res, rej) => {
+        zip.extractAllToAsync(versionsDir, false, true, async err => {
             if (err) rej(err);
             else {
-                await chmod(join(serversDir, v, 'TerrariaServer.bin.86_64'), 0o755);
+                await chmod(join(serversDir, v, 'Linux', 'TerrariaServer.bin.x86_64'), 0o755);
                 res();
             }
         });
-    })
-    //zip.extractEntryTo(v + '/Linux/', versionPath, false, false, true);
+    })*/
 }

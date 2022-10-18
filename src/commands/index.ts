@@ -29,7 +29,7 @@ export default function configureCommands(client: Client) {
         const handler = getHandler(i);
         if (!handler) {
             errorReply(
-                'How did you do that? I\'m confused',
+                new Error('How did you do that? I\'m confused :face_with_raised_eyebrow:'),
                 i
             );
 
@@ -39,12 +39,12 @@ export default function configureCommands(client: Client) {
         try {
             await handler(i);
         } catch(err) {
-            const commandError = err as CommandError;
-            console.error(commandError);
+            const cmdErr = err as CommandError;
+            !cmdErr.noEmit && console.error(err);
 
             errorReply(
-                commandError.title? `${commandError.title}: {error}`:process.env.ERROR_TEMPLATE,
-                i, err
+                err,
+                i
             );
         }
     });

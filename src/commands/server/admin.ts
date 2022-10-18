@@ -3,6 +3,8 @@ import { User, PermissionFlagsBits } from 'discord.js';
 import { CommandHandler } from '@customTypes';
 import { discordServer } from '@mongoose/schemas';
 
+import CommandError from '@utils/commandError';
+
 interface Options {
     id: string;
     user: User;
@@ -24,15 +26,15 @@ const adminCommand: CommandHandler<Options> = async i => {
     const guild = await discordServer.findOne({ guildId });
     
     const server = guild?.servers.find(s => s.id === id);
-    if (!server) return i.editReply('Server does not exist!');
 
-    if (i.user.id === server.ownerId) return i.editReply(`<@${i.user}> is the owner!`);
+    if (!server) throw new CommandError('Server does not exist!', true, 'Not found');
+    if (i.user.id === server.ownerId) throw new CommandError(`<@${i.user}> is the owner!`, true);
     
     server.admins ??= [];
     const isAdmin = server.admins.includes(user.id);
     
     if (action === 'grant') {
-        if (isAdmin) return i.editReply(`<@${user.id} is already authorized!`);
+        if (isAdmin) throw new CommandError(`<@${user.id} is already authorized!`, true, 'Authorized');
 
         server.admins.push(user.id);
         await guild.save();
@@ -41,7 +43,7 @@ const adminCommand: CommandHandler<Options> = async i => {
     }
 
     else {
-        if (!isAdmin) return i.editReply(`<@${user.id}> is not authorized!`);
+        if (!isAdmin) throw new CommandError(`<@${user.id}> is not authorized!`, true, 'Unauthorized');
 
         server.admins.splice(server.admins.indexOf(user.id), 1);
         await guild.save();

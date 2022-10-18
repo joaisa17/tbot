@@ -1,22 +1,14 @@
-import { SlashCommandBuilder, SlashCommandStringOption } from 'discord.js';
-import targetId from '@utils/commandOptions/targetId';
+import { SlashCommandBuilder } from 'discord.js';
 
-import { portOption } from '@utils/commandOptions';
-import { modifiable } from '@customTypes';
+import { targetIdOption } from '@utils/commandOptions';
+import addConfigOptions from '@utils/configOptions';
 
 const modifyCommand = new SlashCommandBuilder()
     .setName('modify')
     .setDescription('Allows you to modify a server\'s configuration')
 
-    .addStringOption(targetId(true))
-    .addIntegerOption(portOption(false));
+    .addStringOption(targetIdOption(true))
 
-modifiable.forEach(name => {
-    modifyCommand.addStringOption(
-        new SlashCommandStringOption()
-            .setName(name as string)
-            .setDescription(`Change the server's ${name}`)
-    );
-});
+addConfigOptions(modifyCommand);
 
 export default modifyCommand;

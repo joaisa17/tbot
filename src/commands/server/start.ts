@@ -17,11 +17,7 @@ const startServer: CommandHandler<Options> = async i => {
     const guild = await (await discordServer.findOne({ guildId }))?.toJSON();
 
     const server = guild?.servers.find(s => s.id === id);
-
-    if (!server) {
-        i.editReply(`Server \`${id}\` does not exist!`);
-        return;
-    }
+    if (!server) throw new CommandError(`Server \`${id}\` does not exist!`, true, 'Not found');
 
     const version = server.version;
 
@@ -32,23 +28,34 @@ const startServer: CommandHandler<Options> = async i => {
         try {
             await installVersion(version);
         } catch(err) {
-            throw new CommandError(err, `Failed to install version ${version}`);
+            throw new CommandError(err, false, 'Failed to install version');
         }
     }
 
-    await i.editReply(`Configuring server \`${server.config.worldname ?? id}\`...`);
     let term: Terminal;
 
     try {
         term = await configureServer(server, guildId);
     } catch(err) {
-        throw new CommandError(err, 'Failed to configure server');
+        throw new CommandError(err, false, 'Failed to configure server');
     }
 
     const msg = await i.editReply('Starting server...');
+    
+    let success: boolean = false;
+    let isOnline: boolean = false;
+
     term.spawn();
 
-    term.on('exit', reason => i.editReply(`Server closed: ${reason}`));
+    term.on('cleanExit', () => {
+        isOnline = false;
+        i.editReply('Server shut down');
+    });
+
+    term.on('exit', reason => {
+        isOnline = false;
+        i.editReply(`Server closed: ${reason}`);
+    });
 
     const thread = await msg.startThread({
         name: `terraria-server-${id}`,
@@ -57,13 +64,27 @@ const startServer: CommandHandler<Options> = async i => {
         reason: 'Live Terraria Server'
     });
 
-    let success: boolean = false;
+    async function threadListener() {
+        if (success && !isOnline) return;
+
+        const messages = await thread.awaitMessages();
+        console.log(`Awaited ${messages.size} messages`);
+
+        messages.forEach(m => {
+            term.send(`say ${m.content.toString()}`);
+        });
+        
+        threadListener();
+    }
+
+    threadListener();
 
     term.on('stdout', str => {
         if (!success) {
             const successMatch = str.match(/^Listening on port \d+/);
             if (successMatch) {
                 success = true;
+                isOnline = true;
                 thread.send(`Server launched! Type \`/help\` for a list of commands`);
             }
         }

@@ -4,6 +4,8 @@ import { discordServer } from '@mongoose/schemas';
 import installVersion, { versionIsInstalled } from '@terraria/install';
 import CommandError from '@utils/commandError';
 
+import parse from '@utils/parse';
+
 interface Options {
     id: string;
     port: number;
@@ -13,12 +15,15 @@ interface Options {
 }
 
 const createServer: CommandHandler<Options> = async i => {
-    const id = i.options.getString('id', true);
-    const port = i.options.getInteger('port', true);
-    const guildId = i.guildId;
+    const {
+        options,
+        config
+    } = parse(i);
 
-    const version = i.options.getString('version') || process.env.DEFAULT_VERSION as string;
-    const password = i.options.getString('password') || undefined;
+    const id = i.options.getString('id', true);
+    const guildId = i.guildId;
+    
+    const version = options.version || process.env.DEFAULT_VERSION;
 
     await i.deferReply({ ephemeral: true, fetchReply: true });
 
@@ -29,20 +34,11 @@ const createServer: CommandHandler<Options> = async i => {
 
     all.forEach(server => {
         if (server.servers.some(s => s.id === id)) idMatch = true;
-        if (server.servers.some(s => s.port === port)) portMatch = true;
+        if (server.servers.some(s => s.config.port === config.port)) portMatch = true;
     });
 
-    if (idMatch) {
-        return i.editReply(
-            'A server is already using the id!'
-        );
-    }
-
-    if (portMatch) {
-        return i.editReply(
-            'A server is already using the port!'
-        );
-    }
+    if (idMatch) throw new CommandError('A server is already using the id!', true, 'Duplicate ID');
+    if (portMatch) throw new CommandError('A server is already using the port!', true, 'Duplicate Port');
 
     const installed = await versionIsInstalled(version);
 
@@ -52,20 +48,18 @@ const createServer: CommandHandler<Options> = async i => {
         try {
             await installVersion(version);
         } catch(err) {
-            throw new CommandError(err, 'Failed to fetch terraria version');
+            throw new CommandError(`Failed to fetch terraria version: ${err}`, false, 'Version fetch');
         }
     }
 
-    const server = all.find(s => s.guildId === guildId) || await discordServer.create({ guildId });
+    const server = all.find(s => s.guildId === guildId) || await discordServer.create({ guildId, servers: [] });
 
     server.servers.push({
         id,
-        port,
-
         ownerId: i.user.id,
 
-        version,
-        password
+        version: version,
+        config
     });
 
     await server.save();
